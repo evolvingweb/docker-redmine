@@ -1,6 +1,8 @@
 FROM sameersbn/ubuntu:14.04.20141001
 MAINTAINER sameer@damagehead.com
 
+ADD assets/detect_squid_deb_proxy /tmp/detect_squid_deb_proxy
+RUN bash /tmp/detect_squid_deb_proxy && apt-get update
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv C3173AA6 \
  && echo "deb http://ppa.launchpad.net/brightbox/ruby-ng/ubuntu trusty main" >> /etc/apt/sources.list \
  && apt-key adv --keyserver keyserver.ubuntu.com --recv C300EE8C \
