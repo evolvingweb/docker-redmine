@@ -1,8 +1,19 @@
-FROM sameersbn/ubuntu:14.04.20141001
+FROM ubuntu:latest
 MAINTAINER sameer@damagehead.com
+
+ENV DEBIAN_FRONTEND noninteractive
+
 
 ADD assets/detect_squid_deb_proxy /tmp/detect_squid_deb_proxy
 RUN bash /tmp/detect_squid_deb_proxy && apt-get update
+
+RUN echo "APT::Install-Recommends 0;" >> /etc/apt/apt.conf.d/01norecommends \
+ && echo "APT::Install-Suggests 0;" >> /etc/apt/apt.conf.d/01norecommends \
+  && apt-get update \
+   && apt-get install -y vim.tiny wget sudo net-tools ca-certificates \
+    && rm -rf /var/lib/apt/lists/* # 20140818
+
+
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv C3173AA6 \
  && echo "deb http://ppa.launchpad.net/brightbox/ruby-ng/ubuntu trusty main" >> /etc/apt/sources.list \
  && apt-key adv --keyserver keyserver.ubuntu.com --recv C300EE8C \
