@@ -56,7 +56,7 @@ If you find this image useful here's how you can help:
 
 - Send a Pull Request with your awesome new features and bug fixes
 - Help new users with [Issues](https://github.com/sameersbn/docker-redmine/issues) they may encounter
-- Send me a tip on [Gittip](https://gittip.com/sameersbn/) or using Bitcoin at **16rDxVqJPyYAFYPLduTaSiwe7ZiY1hHqKM**
+- Send me a tip via [Bitcoin](https://www.coinbase.com/sameersbn) or using [Gratipay](https://gratipay.com/sameersbn/)
 
 # Reporting Issues
 
@@ -110,7 +110,7 @@ docker build --tag="$USER/redmine" .
 
 # Quick Start
 
-Run the redmine image with the name "redmine".
+You can launch the image using the docker command line,
 
 ```bash
 docker run --name=redmine -it --rm -p 10080:80 \
@@ -118,6 +118,15 @@ docker run --name=redmine -it --rm -p 10080:80 \
 -v $(which docker):/bin/docker \
 sameersbn/redmine:2.6.0-1
 ```
+
+Or you can use [fig](http://www.fig.sh/). Assuming you have fig installed,
+
+```bash
+wget https://raw.githubusercontent.com/sameersbn/docker-redmine/master/fig.yml
+fig up
+```
+
+*The rest of the document will use the docker command line. You can quite simply adapt your configuration into a fig.yml file if you wish to do so.*
 
 **NOTE**: Please allow a minute or two for the Redmine application to start.
 
@@ -544,6 +553,7 @@ Below is the complete list of parameters that can be set using environment varia
 - **DB_USER**: The database user. Defaults to `root`
 - **DB_PASS**: The database password. Defaults to no password
 - **DB_POOL**: The database connection pool count. Defaults to `5`.
+- **NGINX_WORKERS**: The number of nginx workers to start. Defaults to `1`.
 - **NGINX_MAX_UPLOAD_SIZE**: Maximum acceptable upload size. Defaults to `20m`.
 - **NGINX_X_FORWARDED_PROTO**: Advanced configuration option for the `proxy_set_header X-Forwarded-Proto` setting in the redmine nginx vHost configuration. Defaults to `https` when `REDMINE_HTTPS` is `true`, else defaults to `$scheme`.
 - **UNICORN_WORKERS**: The number of unicorn workers to start. Defaults to `2`.
@@ -595,12 +605,10 @@ For example, the recurring tasks plugin requires that you create a cron job to p
 ```bash
 ## Recurring Tasks Configuration
 # get the list existing cron jobs for the redmine user
-set +e
 crontab -u redmine -l 2>/dev/null >/tmp/cron.redmine
-set -e
 
 # add new job for recurring tasks
-echo '* */4 * * * cd /home/redmine/redmine && bundle exec rake redmine:recur_tasks RAILS_ENV=production >> log/cron_rake.log 2>&1' >>/tmp/cron.redmine
+echo '@hourly cd /home/redmine/redmine && bundle exec rake redmine:recur_tasks RAILS_ENV=production >> log/cron_rake.log 2>&1' >>/tmp/cron.redmine
 
 # install the new jobs
 crontab -u redmine /tmp/cron.redmine 2>/dev/null
@@ -701,11 +709,17 @@ Now when the image is started the theme will be not be available anymore.
 
 # Shell Access
 
-For debugging and maintenance purposes you may want access the container shell. Since the container does not include a SSH server, you can use the [nsenter](http://man7.org/linux/man-pages/man1/nsenter.1.html) linux tool (part of the util-linux package) to access the container shell.
+For debugging and maintenance purposes you may want access the containers shell. If you are using docker version `1.3.0` or higher you can access a running containers shell using `docker exec` command.
+
+```bash
+docker exec -it redmine bash
+```
+
+If you are using an older version of docker, you can use the [nsenter](http://man7.org/linux/man-pages/man1/nsenter.1.html) linux tool (part of the util-linux package) to access the container shell.
 
 Some linux distros (e.g. ubuntu) use older versions of the util-linux which do not include the `nsenter` tool. To get around this @jpetazzo has created a nice docker image that allows you to install the `nsenter` utility and a helper script named `docker-enter` on these distros.
 
-To install the nsenter tool on your host execute the following command.
+To install `nsenter` execute the following command on your host,
 
 ```bash
 docker run --rm -v /usr/local/bin:/target jpetazzo/nsenter
@@ -718,8 +732,6 @@ sudo docker-enter redmine
 ```
 
 For more information refer https://github.com/jpetazzo/nsenter
-
-Another tool named `nsinit` can also be used for the same purpose. Please refer https://jpetazzo.github.io/2014/03/23/lxc-attach-nsinit-nsenter-docker-0-9/ for more information.
 
 # Upgrading
 
