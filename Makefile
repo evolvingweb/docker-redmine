@@ -1,4 +1,4 @@
-IMAGE=${USER}/redmine
+IMAGE=dergachev/redmine
 
 all: help
 
