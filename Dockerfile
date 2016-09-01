@@ -39,6 +39,9 @@ RUN chmod 755 /app/init
 WORKDIR /home/redmine/redmine/public/themes
 RUN git clone https://github.com/hardpixel/minelab.git
 
+#set default workdir
+WORKDIR /home/redmine
+
 EXPOSE 80
 EXPOSE 443
 
