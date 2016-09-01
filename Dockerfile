@@ -4,7 +4,7 @@ MAINTAINER sameer@damagehead.com
 ENV DEBIAN_FRONTEND noninteractive
 
 
-ADD assets/detect_squid_deb_proxy /tmp/detect_squid_deb_proxy
+COPY assets/detect_squid_deb_proxy /tmp/detect_squid_deb_proxy
 RUN bash /tmp/detect_squid_deb_proxy && apt-get update
 
 RUN echo "APT::Install-Recommends 0;" >> /etc/apt/apt.conf.d/01norecommends \
@@ -28,13 +28,16 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv C3173AA6 \
  && gem install --no-document bundler \
  && rm -rf /var/lib/apt/lists/* # 20140918
 
-ADD assets/setup/ /app/setup/
+COPY assets/setup/ /app/setup/
 RUN chmod 755 /app/setup/install
 RUN /app/setup/install
 
-ADD assets/config/ /app/setup/config/
-ADD assets/init /app/init
+COPY assets/config/ /app/setup/config/
+COPY assets/init /app/init
 RUN chmod 755 /app/init
+
+WORKDIR /home/redmine/redmine/public/themes
+RUN git clone https://github.com/hardpixel/minelab.git
 
 EXPOSE 80
 EXPOSE 443
