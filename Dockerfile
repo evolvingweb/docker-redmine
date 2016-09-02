@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 
 COPY assets/detect_squid_deb_proxy /tmp/detect_squid_deb_proxy
-RUN bash /tmp/detect_squid_deb_proxy && apt-get update
+RUN bash /tmp/detect_squid_deb_proxy && apt-get update && apt-get dist-upgrade
 
 RUN echo "APT::Install-Recommends 0;" >> /etc/apt/apt.conf.d/01norecommends \
  && echo "APT::Install-Suggests 0;" >> /etc/apt/apt.conf.d/01norecommends \
