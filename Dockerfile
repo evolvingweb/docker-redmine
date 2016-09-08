@@ -36,9 +36,6 @@ COPY assets/config/ /app/setup/config/
 COPY assets/init /app/init
 RUN chmod 755 /app/init
 
-WORKDIR /home/redmine/redmine/public/themes
-RUN git clone https://github.com/hardpixel/minelab.git
-
 #set default workdir
 WORKDIR /home/redmine
 
