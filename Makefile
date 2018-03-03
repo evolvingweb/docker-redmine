@@ -1,4 +1,4 @@
-IMAGE=dergachev/redmine
+IMAGE=evolvingweb/redmine
 
 all: help
 
