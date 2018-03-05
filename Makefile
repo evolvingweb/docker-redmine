@@ -1,4 +1,4 @@
-IMAGE=dergachev/redmine
+IMAGE=evolvingweb/redmine
 
 all: help
 
@@ -15,12 +15,15 @@ help:
 build:
 	@docker build --tag=$(IMAGE) .
 
+release:
+	@docker build --tag=$(IMAGE):$(shell cat VERSION) .
+
 quickstart:
 	@echo "Starting redmine..."
 	@docker run --name=redmine-demo -d -p 10080:80 \
 		-v /var/run/docker.sock:/run/docker.sock \
 		-v $(shell which docker):/bin/docker \
-		${USER}/redmine:latest >/dev/null
+		$(IMAGE) >/dev/null
 	@echo "Please be patient. This could take a while..."
 	@echo "Redmine will be available at http://localhost:10080"
 	@echo "Type 'make logs' for the logs"
